@@ -1,4 +1,6 @@
+import os
 from youtube_transcript_api import YouTubeTranscriptApi
+from youtube_transcript_api.proxies import WebshareProxyConfig, GenericProxyConfig
 from datetime import datetime
 from typing import Optional, List
 import json
@@ -15,7 +17,12 @@ LANGUAGES = ["en"]
 class ChannelTranscriptsFetcher:
     def __init__(self, channel_url: str):
         self.channel_url = channel_url
-        self._transcript_api = YouTubeTranscriptApi()
+        self._transcript_api = YouTubeTranscriptApi(
+            proxy_config=WebshareProxyConfig(
+                proxy_username=os.getenv("WEBSHARE_PROXY_USERNAME"),
+                proxy_password=os.getenv("WEBSHARE_PROXY_PASSWORD"),
+            )
+        )
 
     def fetch_transcripts(
         self,
@@ -85,7 +92,6 @@ class ChannelTranscriptsFetcher:
 
         logger.info(f"Saved {len(transcripts)} transcripts to {path}")
 
-
     def _get_channel_videos(self, limit: Optional[int] = None) -> List[dict]:
         """
         Fetch video metadata from the channel.
@@ -137,5 +143,9 @@ class ChannelTranscriptsFetcher:
 
 
 if __name__ == "__main__":
+    from dotenv import load_dotenv
+
+    load_dotenv("/Users/wnowogor/PycharmProjects/Vid2News/.env")
+
     fetcher = ChannelTranscriptsFetcher("https://www.youtube.com/@GoodTimesBadTimes")
-    fetcher.fetch_transcripts(n_videos=2, json_save_path="transcripts.json")
+    fetcher.fetch_transcripts(n_videos=10, json_save_path="transcripts.json")

@@ -1,4 +1,5 @@
 from src.extracting import SimpleNewsExtractor
+from src.processing.clustering import NewsClusteringEngine
 
 
 channels = [
@@ -15,5 +16,13 @@ if __name__ == "__main__":
     load_dotenv("/Users/wnowogor/PycharmProjects/Vid2News/.env")
 
     extractors = [SimpleNewsExtractor(url) for url in channels]
+
+    news = []
     for i, extractor in enumerate(extractors):
-        extractor.run(json_save_path=f"news_{i}", n_videos=5)
+        results = extractor.run(json_save_path=f"news_{i}.json", n_videos=5)
+        news.extend(results)
+
+    clustering_engine = NewsClusteringEngine()
+    clustering_engine.get_clusters(news, json_save_path="news_clusters.json")
+
+

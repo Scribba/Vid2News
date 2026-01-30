@@ -9,24 +9,17 @@ import pandas as pd
 import numpy as np
 
 from src.utils.logger import logger
+from src.extracting.utils import News
 
 
 class NewsClusteringEngine:
-    def __init__(self, news_path: str):
-        try:
-            with open(news_path, "r", encoding="utf-8") as f:
-                data = json.load(f)
-        except Exception as e:
-            raise Exception("Could not load news json file: {}".format(e))
-
-        news_items = data["news_items"]
-        self.df = pd.DataFrame(news_items)
+    def __init__(self):
         self.client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-
-        logger.info("Initialized NewsClusteringEngine instance, %s news loaded", len(news_items))
+        self.df = None
 
     def get_clusters(
         self,
+        news: list[News],
         json_save_path: Optional[str] = None,
         dim_red_n_neighbors: int = 5,
         dim_red_n_components: int = 10,
@@ -35,6 +28,7 @@ class NewsClusteringEngine:
         cluster_selection_method: str = "eom",
         cluster_distance_metric: str = "euclidean",
     ):
+        self.df = pd.DataFrame([n.to_dict() for n in news])
         self.df["text_for_embedding"] = self.df.apply(self._prepare_text_for_embedding, axis=1)
 
         texts = self.df["text_for_embedding"].tolist()
@@ -67,7 +61,15 @@ class NewsClusteringEngine:
         logger.info(f"\nCluster distribution: %s", self.df["cluster"].value_counts().sort_index())
 
         if json_save_path:
-            self.df.to_json(json_save_path)
+            grouped = (
+                self.df
+                .groupby("cluster")
+                .apply(lambda g: g.to_dict(orient="records"))
+                .to_dict()
+            )
+
+            with open(json_save_path, "w", encoding="utf-8") as f:
+                json.dump(grouped, f, ensure_ascii=False, indent=2)
 
         return self.df.to_dict()
 
@@ -97,5 +99,12 @@ if __name__ == "__main__":
 
     load_dotenv("/Users/wnowogor/PycharmProjects/Vid2News/.env")
 
-    clustering_engine = NewsClusteringEngine("/Users/wnowogor/PycharmProjects/Vid2News/src/extracting/news.json")
-    clustering_engine.get_clusters(json_save_path="clusters.json")
+    with open("/Users/wnowogor/PycharmProjects/Vid2News/src/extracting/news.json", "r", encoding="utf-8") as f:
+        data = json.load(f)
+
+    news = []
+    for item in data["news_items"]:
+        news.append(News.from_dict(item))
+
+    clustering_engine = NewsClusteringEngine()
+    clustering_engine.get_clusters(news=news, json_save_path="clusters.json")
