@@ -49,10 +49,7 @@ class News:
     content: str
     keywords: List[str] = field(default_factory=list)
     category: str = ""
-    sentiment: str = ""
-    importance: str = ""
     entities: List[str] = field(default_factory=list)
-    source_video_id: str = ""
     source_video_title: str = ""
     source_video_url: str = ""
     source_channel: str = ""
@@ -72,10 +69,7 @@ class News:
             "content": self.content,
             "keywords": self.keywords,
             "category": self.category,
-            "sentiment": self.sentiment,
-            "importance": self.importance,
             "entities": self.entities,
-            "source_video_id": self.source_video_id,
             "source_video_title": self.source_video_title,
             "source_video_url": self.source_video_url,
             "source_channel": self.source_channel,
@@ -105,10 +99,7 @@ class News:
             content=data.get("content", ""),
             keywords=data.get("keywords", []),
             category=data.get("category", ""),
-            sentiment=data.get("sentiment", "neutral"),
-            importance=data.get("importance", "medium"),
             entities=data.get("entities", []),
-            source_video_id=source_video_id,
             source_video_title=source_video_title,
             source_video_url=source_video_url,
             source_channel=source_channel,

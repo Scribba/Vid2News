@@ -22,7 +22,7 @@ class ChannelTranscriptsFetcher:
         n_videos: Optional[int] = None,
         since_date: Optional[datetime] = None,
         json_save_path: Optional[str] = None
-    ):
+    ) -> List[Transcript]:
         if n_videos is None and since_date is None:
             n_videos = DEFAULT_N_VIDEOS
 
@@ -138,4 +138,4 @@ class ChannelTranscriptsFetcher:
 
 if __name__ == "__main__":
     fetcher = ChannelTranscriptsFetcher("https://www.youtube.com/@GoodTimesBadTimes")
-    fetcher.fetch_transcripts(n_videos=1, json_save_path="transcripts.json")
+    fetcher.fetch_transcripts(n_videos=2, json_save_path="transcripts.json")
