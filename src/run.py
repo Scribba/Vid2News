@@ -1,6 +1,7 @@
 from src.extracting import SimpleNewsExtractor
 from src.processing.clustering import NewsClusteringEngine
 from src.generating.news_generator import NewsGenerator
+from src.utils.grist_uploader import GristUploader
 
 
 channels = [
@@ -29,7 +30,17 @@ if __name__ == "__main__":
     news_generator = NewsGenerator()
     news_list = news_generator.generate_from_df(clusters_df)
 
+    upload_data = []
     for news in news_list:
-        print(news)
+        data = {
+            "title": news.title,
+            "content": news.content,
+            "source_video_urls": str(news.source_video_urls),
+            "source_channels": str(news.source_channels),
+            "status": "not approved"
+        }
+
+    uploader = GristUploader(document_id="n5DoTVv7Zr4q", table_id="Geopolitics")
+
 
 

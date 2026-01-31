@@ -21,6 +21,9 @@ STYLE:
 NEWS LIST:
 {news_list}
 
-OUTPUT:
-A single, polished social media post focusing on ONE main news topic.
+Respond with **valid JSON only**, in **exactly** this format:
+
+{{
+  "content": <POST CONTENT> 
+}}
 """
