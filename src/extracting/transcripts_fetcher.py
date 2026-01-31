@@ -1,7 +1,8 @@
 import os
+import re
 from youtube_transcript_api import YouTubeTranscriptApi
-from youtube_transcript_api.proxies import WebshareProxyConfig, GenericProxyConfig
-from datetime import datetime
+from youtube_transcript_api.proxies import WebshareProxyConfig
+from datetime import datetime, timedelta
 from typing import Optional, List
 import json
 import scrapetube
@@ -12,6 +13,9 @@ from src.extracting.utils import Transcript
 
 DEFAULT_N_VIDEOS = 5
 LANGUAGES = ["en"]
+RELATIVE_TIME_RE = re.compile(
+    r"(?P<value>\d+)\s+(?P<unit>second|minute|hour|day|week|month|year)s?\s+ago"
+)
 
 
 class ChannelTranscriptsFetcher:
@@ -34,7 +38,10 @@ class ChannelTranscriptsFetcher:
             n_videos = DEFAULT_N_VIDEOS
 
         # Determine how many videos to scan
-        scan_limit = n_videos if n_videos else 100  # Scan more if filtering by date
+        scan_limit = n_videos if n_videos is not None else DEFAULT_N_VIDEOS
+        if since_date is not None:
+            scan_limit = max(scan_limit, 50)
+            since_date = self._normalize_datetime(since_date)
 
         videos = self._get_channel_videos(limit=scan_limit)
         logger.debug(f"Retrieved {len(videos)} video metadata entries")
@@ -44,10 +51,24 @@ class ChannelTranscriptsFetcher:
         for video_data in videos:
             video_metadata = self._parse_video_metadata(video_data)
             video_id = video_metadata["video_id"]
+            published_at = video_metadata["published_at"]
 
             if not video_id:
                 logger.debug(f"Could not find video id, skipping to next metadata entry")
                 continue
+            if since_date is not None:
+                if published_at is None:
+                    logger.debug(
+                        "Missing publish date for %s; skipping due to since_date filter",
+                        video_metadata["title"],
+                    )
+                    continue
+                if published_at < since_date:
+                    logger.debug(
+                        "Reached videos older than since_date (%s); stopping scan",
+                        since_date.isoformat(),
+                    )
+                    break
 
             logger.debug("Fetching transcript for video %s", video_metadata["title"])
             transcript_text = self._fetch_transcript_for_video(video_id)
@@ -60,6 +81,7 @@ class ChannelTranscriptsFetcher:
                 video_id=video_id,
                 title=video_metadata["title"],
                 text=transcript_text or "",
+                publish_date=published_at,
             )
             transcripts.append(transcript)
 
@@ -119,11 +141,69 @@ class ChannelTranscriptsFetcher:
         """
         video_id = video_data.get("videoId", "")
         title = video_data.get("title", {}).get("runs", [{}])[0].get("text", "")
+        published_at = self._extract_published_at(video_data)
 
         return {
             "video_id": video_id,
             "title": title,
+            "published_at": published_at,
         }
+
+    def _normalize_datetime(self, value: datetime) -> datetime:
+        if value.tzinfo is not None:
+            return value.astimezone().replace(tzinfo=None)
+        return value
+
+    def _extract_published_at(self, video_data: dict) -> Optional[datetime]:
+        if "publishedTimestamp" in video_data:
+            try:
+                return datetime.fromtimestamp(int(video_data["publishedTimestamp"]))
+            except (TypeError, ValueError):
+                pass
+
+        published_date = video_data.get("publishedDate")
+        if published_date:
+            try:
+                parsed = datetime.fromisoformat(published_date)
+                return self._normalize_datetime(parsed)
+            except ValueError:
+                pass
+
+        published_time_text = video_data.get("publishedTimeText", {})
+        text = ""
+        if isinstance(published_time_text, dict):
+            text = (
+                published_time_text.get("simpleText")
+                or (published_time_text.get("runs") or [{}])[0].get("text", "")
+            )
+        elif isinstance(published_time_text, str):
+            text = published_time_text
+
+        if not text:
+            return None
+
+        match = RELATIVE_TIME_RE.search(text.lower())
+        if not match:
+            return None
+
+        value = int(match.group("value"))
+        unit = match.group("unit")
+        if unit == "second":
+            delta = timedelta(seconds=value)
+        elif unit == "minute":
+            delta = timedelta(minutes=value)
+        elif unit == "hour":
+            delta = timedelta(hours=value)
+        elif unit == "day":
+            delta = timedelta(days=value)
+        elif unit == "week":
+            delta = timedelta(weeks=value)
+        elif unit == "month":
+            delta = timedelta(days=value * 30)
+        else:
+            delta = timedelta(days=value * 365)
+
+        return datetime.now() - delta
 
     def _fetch_transcript_for_video(self, video_id: str) -> Optional[str]:
         """
