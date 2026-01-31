@@ -1,5 +1,4 @@
 import os
-from typing import List
 from dotenv import load_dotenv
 
 from langchain_core.output_parsers import PydanticOutputParser
@@ -21,14 +20,14 @@ class NewsItem(BaseModel):
     title: str = Field(description="Headline for the news item")
     summary: str = Field(description="Brief 2-3 sentence summary")
     content: str = Field(description="Full details and context")
-    keywords: List[str] = Field(default_factory=list, description="Relevant keywords")
+    keywords: list[str] = Field(default_factory=list, description="Relevant keywords")
     category: str = Field(default="", description="News category")
-    entities: List[str] = Field(default_factory=list, description="Named entities mentioned")
+    entities: list[str] = Field(default_factory=list, description="Named entities mentioned")
 
 
 class NewsExtractionOutput(BaseModel):
     """Pydantic model for the complete extraction result."""
-    news_items: List[NewsItem] = Field(default_factory=list, description="List of extracted news items")
+    news_items: list[NewsItem] = Field(default_factory=list, description="List of extracted news items")
 
 
 class TranscriptParser:

@@ -1,5 +1,6 @@
 from src.extracting import SimpleNewsExtractor
 from src.processing.clustering import NewsClusteringEngine
+from src.generating.news_generator import NewsGenerator
 
 
 channels = [
@@ -19,10 +20,16 @@ if __name__ == "__main__":
 
     news = []
     for i, extractor in enumerate(extractors):
-        results = extractor.run(json_save_path=f"news_{i}.json", n_videos=5)
+        results = extractor.run(json_save_path=f"news_{i}.json", n_videos=10)
         news.extend(results)
 
     clustering_engine = NewsClusteringEngine()
-    clustering_engine.get_clusters(news, json_save_path="news_clusters.json")
+    clusters_df = clustering_engine.get_clusters(news, json_save_path="news_clusters.json")
+
+    news_generator = NewsGenerator()
+    news_list = news_generator.generate_from_df(clusters_df)
+
+    for news in news_list:
+        print(news)
 
 

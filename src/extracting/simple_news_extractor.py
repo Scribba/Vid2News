@@ -1,6 +1,6 @@
 import json
 from datetime import datetime
-from typing import List, Optional
+from typing import Optional
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 from src.extracting.transcript_parser import TranscriptParser
@@ -21,7 +21,7 @@ class SimpleNewsExtractor:
         since_date: Optional[datetime] = None,
         json_save_path: Optional[str] = None,
         max_workers: int = 4,
-    ) -> List[News]:
+    ) -> list[News]:
 
         transcripts = self.transcripts_fetcher.fetch_transcripts(
             n_videos=n_videos,
@@ -30,7 +30,7 @@ class SimpleNewsExtractor:
 
         logger.info(f"Fetched {len(transcripts)} transcripts")
 
-        news: List[News] = []
+        news: list[News] = []
 
         with ThreadPoolExecutor(max_workers=max_workers) as executor:
             futures = {
@@ -56,7 +56,7 @@ class SimpleNewsExtractor:
         return news
 
     @staticmethod
-    def _save_to_json(news: List[News], path: str) -> None:
+    def _save_to_json(news: list[News], path: str) -> None:
         data = {
             "generated_at": datetime.utcnow().isoformat(),
             "news_items": [item.to_dict() for item in news],

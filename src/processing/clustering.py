@@ -71,7 +71,7 @@ class NewsClusteringEngine:
             with open(json_save_path, "w", encoding="utf-8") as f:
                 json.dump(grouped, f, ensure_ascii=False, indent=2)
 
-        return self.df.to_dict()
+        return self.df
 
     @staticmethod
     def _prepare_text_for_embedding(row: pd.Series) -> str:
@@ -107,4 +107,4 @@ if __name__ == "__main__":
         news.append(News.from_dict(item))
 
     clustering_engine = NewsClusteringEngine()
-    clustering_engine.get_clusters(news=news, json_save_path="clusters.json")
+    cluster_df = clustering_engine.get_clusters(news=news, json_save_path="clusters.json")
