@@ -14,11 +14,12 @@ from src.utils.logger import logger
 
 DEFAULT_DF_COLUMNS = ["title", "content", "keywords", "source_channel", "source_video_url", "category"]
 DEFAULT_TEMPERATURE = 0.5
-DEFAULT_MODEL_NAME = "gpt-4"
+DEFAULT_MODEL_NAME = "gpt-4o-mini"
 
 
 class GeneratedNewsItem(BaseModel):
-    content: str = pydantic.Field(default="Content of the generated news")
+    title: str = pydantic.Field(description="Title of the news")
+    content: str = pydantic.Field(description="Content of the generated news")
 
 
 class NewsGenerator:
@@ -39,7 +40,7 @@ class NewsGenerator:
     def generate(self, text: str):
         try:
             response = self.chain.invoke({"news_list": text})
-            news_content = response.content
+            news_content = response
 
             logger.debug(f"News generated: {news_content}")
             return news_content
@@ -52,9 +53,10 @@ class NewsGenerator:
         prompts, metadata = self._process_df(df)
         generated_news = []
         for prompt, meta in zip(prompts, metadata):
-            content = self.generate(prompt)
+            news = self.generate(prompt)
             generated_news.append(GeneratedNews(
-                content=content,
+                title=news.title,
+                content=news.content,
                 source_video_urls=meta["source_video_urls"],
                 source_channels=meta["source_channels"],
             ))

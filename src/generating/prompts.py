@@ -24,6 +24,7 @@ NEWS LIST:
 Respond with **valid JSON only**, in **exactly** this format:
 
 {{
+  "title": <POST TITLE>
   "content": <POST CONTENT> 
 }}
 """

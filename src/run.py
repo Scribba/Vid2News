@@ -6,9 +6,8 @@ from src.utils.grist_uploader import GristUploader
 
 channels = [
     "https://www.youtube.com/@GoodTimesBadTimes",
-    "https://www.youtube.com/channel/UCsy9I56PY3IngCf_VGjunMQ",
-    "https://www.youtube.com/channel/UCVVRDJbTe6q6FJRR4m3h3_A",
-    "https://www.youtube.com/channel/UCwnKziETDbHJtx78nIkfYug"
+    # "https://www.youtube.com/channel/UCsy9I56PY3IngCf_VGjunMQ",
+    # "https://www.youtube.com/channel/UCwnKziETDbHJtx78nIkfYug"
 ]
 
 
@@ -21,7 +20,7 @@ if __name__ == "__main__":
 
     news = []
     for i, extractor in enumerate(extractors):
-        results = extractor.run(json_save_path=f"news_{i}.json", n_videos=10)
+        results = extractor.run(json_save_path=f"news_{i}.json", n_videos=5)
         news.extend(results)
 
     clustering_engine = NewsClusteringEngine()
@@ -41,6 +40,7 @@ if __name__ == "__main__":
         }
 
     uploader = GristUploader(document_id="n5DoTVv7Zr4q", table_id="Geopolitics")
+    uploader.upload(upload_data)
 
 
 

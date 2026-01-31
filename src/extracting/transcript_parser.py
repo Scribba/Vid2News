@@ -12,7 +12,7 @@ from src.utils.logger import logger
 
 
 DEFAULT_TEMPERATURE = 0.0
-DEFAULT_MODEL_NAME = "gpt-4"
+DEFAULT_MODEL_NAME = "gpt-4o-mini"
 
 
 class NewsItem(BaseModel):
