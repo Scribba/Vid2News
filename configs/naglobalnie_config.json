@@ -1,0 +1,27 @@
+{
+  "page_url": "https://www.facebook.com/profile.php?id=61587105067494&locale=pl_PL",
+  "page_token_env_var_name": "FB_NAGLOBALNIE_PUBLISHER_TOKEN",
+  "page_id_env_var_name": "FB_NAGLOBALNIE_PAGE_ID",
+  "grist_document_id": "n5DoTVv7Zr4q",
+  "grist_table_name": "NaGlobalnie",
+  "source_channels": [
+    "https://www.youtube.com/@warographics643",
+    "https://www.youtube.com/@VisualPolitikEN/videos",
+    "https://www.youtube.com/@CaspianReport",
+    "https://www.youtube.com/@johnnyharris",
+    "https://www.youtube.com/@TheRedLinePod/videos",
+    "https://www.youtube.com/@TheResearcherYT",
+    "https://www.youtube.com/@ZeihanonGeopolitics",
+    "https://www.youtube.com/@JamesKerLindsay",
+    "https://www.youtube.com/@PBoyle",
+    "https://www.youtube.com/@MoneyMacro",
+    "https://www.youtube.com/@asiasociety",
+    "https://www.youtube.com/@stgseries",
+    "https://www.youtube.com/@hudsoninstitute",
+    "https://www.youtube.com/@csis",
+    "https://www.youtube.com/@CISAus",
+    "https://www.youtube.com/@RusiOrg/featured",
+    "https://www.youtube.com/@centreforeasternstudies/featured",
+    "https://www.youtube.com/@GoodTimesBadTimes"
+  ]
+}

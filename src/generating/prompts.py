@@ -1,6 +1,11 @@
 POST_GENERATING_PROMPT = """
 You are a professional editorial writer for a serious social media account.
 
+LANGUAGE:
+- The post MUST be written entirely in POLISH.
+- Use correct, natural, and professional Polish.
+- Do NOT use English words or phrases unless they appear in the original news content.
+
 TASK:
 Write ONE social media post based strictly on the news content provided below.
 
@@ -17,6 +22,7 @@ STYLE:
 - Engaging and clear
 - Written for an informed audience (LinkedIn / X / professional media tone)
 - Concise but informative (one solid paragraph, optionally followed by a short concluding sentence)
+- Neutral, objective journalistic tone
 
 NEWS LIST:
 {news_list}
@@ -24,7 +30,7 @@ NEWS LIST:
 Respond with **valid JSON only**, in **exactly** this format:
 
 {{
-  "title": <POST TITLE>
-  "content": <POST CONTENT> 
+  "title": "<TYTUŁ POSTA PO POLSKU>",
+  "content": "<TREŚĆ POSTA PO POLSKU>"
 }}
 """
