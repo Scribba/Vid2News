@@ -43,12 +43,36 @@ class GristClient:
         logger.info(f"Fetched {len(df)} records from Grist table")
         return df
 
+    def update_rows(self, updates: list[dict]):
+        payload = {"records": updates}
+
+        resp = requests.patch(
+            f"{BASE_URL}/docs/{self.document_id}/tables/{self.table_id}/records",
+            headers=self.headers,
+            json=payload,
+        )
+
+        resp.raise_for_status()
+        logger.info(f"Updated {len(updates)} records in Grist table")
+
+
 if __name__ == "__main__":
     from dotenv import load_dotenv
 
     load_dotenv("/Users/wnowogor/PycharmProjects/Vid2News/.env")
 
-    uploader = GristClient(document_id="n5DoTVv7Zr4q", table_id="Geopolitics")
+    uploader = GristClient(document_id="n5DoTVv7Zr4q", table_id="NaGlobalnie")
 
     df = uploader.fetch_table()
-    print(df)
+
+    # updates = [
+    #     {
+    #         "id": 1,
+    #         "fields": {
+    #             "status": "approved"
+    #         }
+    #     }
+    # ]
+    #
+    # uploader.update_rows(updates )
+
