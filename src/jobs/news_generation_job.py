@@ -10,6 +10,7 @@ from src.processing.clustering import NewsClusteringEngine
 from src.generating.news_generator import NewsGenerator
 from src.utils.logger import logger
 from src.utils.grist_client import GristClient
+from src.analyzing.news_analyzer import NewsAnalyzer
 
 
 CONFIGS_PATH = Path("/Users/wnowogor/PycharmProjects/Vid2News/configs")
@@ -62,11 +63,14 @@ def generate(config: dict):
         }
         upload_data.append(data)
 
-    uploader = GristClient(
+    grist_client = GristClient(
         document_id=config["grist_document_id"],
         table_id=config["grist_table_name"],
     )
-    uploader.upload(upload_data)
+    grist_client.upload(upload_data)
+
+    analyzer = NewsAnalyzer(grist_client=grist_client)
+    analyzer.analyze_all()
 
     logger.info("Job finished!")
 
