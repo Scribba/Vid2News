@@ -65,14 +65,14 @@ if __name__ == "__main__":
 
     df = uploader.fetch_table()
 
-    # updates = [
-    #     {
-    #         "id": 1,
-    #         "fields": {
-    #             "status": "approved"
-    #         }
-    #     }
-    # ]
-    #
-    # uploader.update_rows(updates )
+    updates = [
+        {
+            "id": 1,
+            "fields": {
+                "status": "not approved"
+            }
+        }
+    ]
+
+    uploader.update_rows(updates )
 
