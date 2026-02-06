@@ -31,7 +31,7 @@ class GristClient:
         else:
             logger.info("Successfully uploaded records")
 
-    def fetch_table(self, max_rows: int = 100) -> pd.DataFrame:
+    def fetch_table(self, max_rows: int = 100, include_ids: bool = False) -> pd.DataFrame:
         resp = requests.get(
             f"{BASE_URL}/docs/{self.document_id}/tables/{self.table_id}/records",
             headers=self.headers,
@@ -39,9 +39,17 @@ class GristClient:
         )
         resp.raise_for_status()
         data = resp.json()
-        records = [rec["fields"] for rec in data.get("records", [])]
+        records = data.get("records", [])
+        if include_ids:
+            rows = []
+            for rec in records:
+                fields = dict(rec.get("fields", {}))
+                fields["id"] = rec.get("id")
+                rows.append(fields)
+        else:
+            rows = [rec.get("fields", {}) for rec in records]
 
-        df = pd.DataFrame(records)
+        df = pd.DataFrame(rows)
         logger.info(f"Fetched {len(df)} records from Grist table")
         return df
 

@@ -1,0 +1,32 @@
+name: Publishing (every 3 hours)
+
+on:
+  schedule:
+    - cron: "0 */3 * * *"
+  workflow_dispatch:
+
+jobs:
+  run-publishing:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run publishing job
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+          GRIST_API_KEY: ${{ secrets.GRIST_API_KEY }}
+          FB_NAGLOBALNIE_PUBLISHER_TOKEN: ${{ secrets.FB_NAGLOBALNIE_PUBLISHER_TOKEN }}
+          FB_NAGLOBALNIE_PAGE_ID: ${{ secrets.FB_NAGLOBALNIE_PAGE_ID }}
+        run: |
+          python -m src.jobs.publishing_job
