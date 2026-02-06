@@ -70,8 +70,11 @@ class SimpleNewsExtractor:
 
 if __name__ == "__main__":
     from dotenv import load_dotenv
+    from pathlib import Path
+    from src.utils.path_utils import get_repo_root
 
-    load_dotenv("/Users/wnowogor/PycharmProjects/Vid2News/.env")
+    repo_root = get_repo_root(Path(__file__))
+    load_dotenv(repo_root / ".env")
 
     extractor = SimpleNewsExtractor("https://www.youtube.com/@GoodTimesBadTimes")
     extractor.run(n_videos=1, json_save_path="news.json")

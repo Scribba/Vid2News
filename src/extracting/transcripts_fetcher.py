@@ -224,8 +224,11 @@ class ChannelTranscriptsFetcher:
 
 if __name__ == "__main__":
     from dotenv import load_dotenv
+    from pathlib import Path
+    from src.utils.path_utils import get_repo_root
 
-    load_dotenv("/Users/wnowogor/PycharmProjects/Vid2News/.env")
+    repo_root = get_repo_root(Path(__file__))
+    load_dotenv(repo_root / ".env")
 
     fetcher = ChannelTranscriptsFetcher("https://www.youtube.com/@GoodTimesBadTimes")
     fetcher.fetch_transcripts(n_videos=10, json_save_path="transcripts.json")

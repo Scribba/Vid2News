@@ -1,4 +1,5 @@
 import os
+import time
 from dotenv import load_dotenv
 
 from src.publishing.fb_publisher import FacebookPublisher
@@ -6,10 +7,14 @@ from src.utils.grist_client import GristClient
 
 
 if __name__ == "__main__":
-    load_dotenv("/Users/wnowogor/PycharmProjects/Vid2News/.env")
+    from pathlib import Path
+    from src.utils.path_utils import get_repo_root
+
+    repo_root = get_repo_root(Path(__file__))
+    load_dotenv(repo_root / ".env")
 
     grist_client = GristClient(
-        document_id="n5DoTVv7Zr4q", table_id="Geopolitics"
+        document_id="n5DoTVv7Zr4q", table_id="NaGlobalnie"
     )
 
     fb_client = FacebookPublisher(
@@ -21,4 +26,5 @@ if __name__ == "__main__":
     approved_posts = posts[posts["status"] == "approved"]
 
     for post in approved_posts.iterrows():
+        time.sleep(10)
         fb_client.publish(post[1]["content"])

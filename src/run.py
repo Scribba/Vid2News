@@ -1,10 +1,12 @@
 from datetime import datetime, timedelta
+from pathlib import Path
 
 from src.extracting import SimpleNewsExtractor
 from src.processing.clustering import NewsClusteringEngine
 from src.generating.news_generator import NewsGenerator
 from src.utils.grist_client import GristClient
 from src.utils.logger import logger
+from src.utils.path_utils import get_repo_root
 
 
 TIME_DELTA = timedelta(hours=24)
@@ -35,7 +37,8 @@ channels = [
 if __name__ == "__main__":
     from dotenv import load_dotenv
 
-    load_dotenv("/Users/wnowogor/PycharmProjects/Vid2News/.env")
+    repo_root = get_repo_root(Path(__file__))
+    load_dotenv(repo_root / ".env")
 
     extractors = [SimpleNewsExtractor(url) for url in channels]
 
@@ -49,7 +52,11 @@ if __name__ == "__main__":
             logger.error("Failed to extract transcripts from channel %s", extractor.channel_id)
 
     clustering_engine = NewsClusteringEngine()
-    clusters_df = clustering_engine.get_clusters(news, json_save_path="news_clusters.json")
+    clusters_json_path = repo_root / "src" / "jobs" / "news_clusters.json"
+    clusters_df = clustering_engine.get_clusters(
+        news,
+        json_save_path=str(clusters_json_path),
+    )
 
     news_generator = NewsGenerator()
     news_list = news_generator.generate_from_df(clusters_df)

@@ -2,3 +2,13 @@ yt-dlp>=2024.1.0
 scrapetube>=2.5.0
 openai>=1.0.0
 youtube-transcript-api>=1.2.4
+pandas
+numpy
+requests
+python-dotenv
+umap-learn
+hdbscan
+langchain-openai
+langchain-core
+pydantic
+scipy

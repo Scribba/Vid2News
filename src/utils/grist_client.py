@@ -1,7 +1,9 @@
 import os
 import requests
 import pandas as pd
+from pathlib import Path
 from src.utils.logger import logger
+from src.utils.path_utils import get_repo_root
 
 BASE_URL = "https://scribba-sm.getgrist.com/api"
 
@@ -59,7 +61,8 @@ class GristClient:
 if __name__ == "__main__":
     from dotenv import load_dotenv
 
-    load_dotenv("/Users/wnowogor/PycharmProjects/Vid2News/.env")
+    repo_root = get_repo_root(Path(__file__))
+    load_dotenv(repo_root / ".env")
 
     uploader = GristClient(document_id="n5DoTVv7Zr4q", table_id="NaGlobalnie")
 

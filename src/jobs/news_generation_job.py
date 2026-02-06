@@ -9,11 +9,13 @@ from src.extracting.simple_news_extractor import SimpleNewsExtractor
 from src.processing.clustering import NewsClusteringEngine
 from src.generating.news_generator import NewsGenerator
 from src.utils.logger import logger
+from src.utils.path_utils import get_repo_root
 from src.utils.grist_client import GristClient
 from src.analyzing.news_analyzer import NewsAnalyzer
 
 
-CONFIGS_PATH = Path("/Users/wnowogor/PycharmProjects/Vid2News/configs")
+REPO_ROOT = get_repo_root(Path(__file__))
+CONFIGS_PATH = REPO_ROOT / "configs"
 TIME_DELTA = timedelta(hours=24)
 
 
@@ -47,7 +49,11 @@ def generate(config: dict):
             news.extend(future.result())
 
     clustering_engine = NewsClusteringEngine()
-    clusters_df = clustering_engine.get_clusters(news, json_save_path="news_clusters.json")
+    clusters_json_path = REPO_ROOT / "src" / "jobs" / "news_clusters.json"
+    clusters_df = clustering_engine.get_clusters(
+        news,
+        json_save_path=str(clusters_json_path),
+    )
 
     news_generator = NewsGenerator()
     news_list = news_generator.generate_from_df(clusters_df)
@@ -76,7 +82,7 @@ def generate(config: dict):
 
 
 if __name__ == "__main__":
-    load_dotenv("/Users/wnowogor/PycharmProjects/Vid2News/.env")
+    load_dotenv(REPO_ROOT / ".env")
 
     configs = []
     for file in os.listdir(CONFIGS_PATH):

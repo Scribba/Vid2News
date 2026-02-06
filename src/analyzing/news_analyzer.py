@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 
 from scipy.special.cython_special import fdtri
 from langchain_openai import ChatOpenAI
@@ -68,8 +69,10 @@ class NewsAnalyzer:
 
 if __name__ == "__main__":
     from dotenv import load_dotenv
+    from src.utils.path_utils import get_repo_root
 
-    load_dotenv("/Users/wnowogor/PycharmProjects/Vid2News/.env")
+    repo_root = get_repo_root(Path(__file__))
+    load_dotenv(repo_root / ".env")
 
     analyzer = NewsAnalyzer(grist_client=GristClient(
         document_id="n5DoTVv7Zr4q", table_id="NaGlobalnie"
