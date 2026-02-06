@@ -35,9 +35,14 @@ def publish_for_config(config: dict):
         approved_posts.get("score"),
         errors="coerce",
     )
+    approved_posts["generated_at"] = pd.to_datetime(
+        approved_posts.get("generated_at"),
+        errors="coerce",
+        utc=True,
+    )
     top_post = approved_posts.sort_values(
-        by="score",
-        ascending=False,
+        by=["score", "generated_at"],
+        ascending=[False, False],
         na_position="last",
     ).iloc[0]
 

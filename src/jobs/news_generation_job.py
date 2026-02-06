@@ -65,6 +65,7 @@ def generate(config: dict):
             "content": news.content,
             "source_video_urls": str(news.source_video_urls),
             "source_channels": str(news.source_channels),
+            "generated_at": str(datetime.now().isoformat()),
             "status": "not approved"
         }
         upload_data.append(data)
